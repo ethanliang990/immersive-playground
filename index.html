@@ -63,5 +63,24 @@
 
     <p class="sr-only" aria-live="polite" id="announcer"></p>
     <script src="main.js"></script>
+    <script>
+      // The interface covers most of the canvas, so listen at the window level.
+      // Buttons and sliders are left alone so they stay fully usable.
+      function isPlaygroundControl(target) {
+        return target instanceof Element && Boolean(target.closest("button, input, a, label"));
+      }
+
+      window.addEventListener("pointermove", movePointer, { capture: true, passive: true });
+      window.addEventListener("pointerdown", (event) => {
+        if (isPlaygroundControl(event.target)) return;
+        movePointer(event);
+        sendRipple(field.pointer.x, field.pointer.y);
+        if (field.paused) setPaused(false);
+        event.stopPropagation();
+      }, { capture: true });
+      window.addEventListener("pointerout", (event) => {
+        if (!event.relatedTarget) field.pointer.active = false;
+      }, { capture: true });
+    </script>
   </body>
 </html>
